@@ -14,6 +14,38 @@ export default defineBackground(() => {
     const tabId = (await browser.tabs.query({ active: true, currentWindow: true }))[0]?.id || 0;
     if (tabId == 0) return false;
     try {
+      // 处理选择功能消息
+      if (message.action === "start_selecting") {
+        // 注入选择功能的content script
+        try {
+          await browser.scripting.executeScript({
+            target: { tabId },
+            files: ['content-scripts/choose.js']
+          });
+          // 发送消息启动选择
+          const response = await browser.tabs.sendMessage(tabId, { action: "start_selecting" });
+          return response;
+        } catch (error) {
+          console.error('启动选择功能失败:', error);
+          return { success: false, error: error.message };
+        }
+      }
+
+      // 处理选择结果消息
+      if (message.action === "element_selected") {
+        // 转发消息到popup
+        try {
+          browser.runtime.sendMessage({
+            action: "element_selected",
+            content: message.content
+          });
+          return { success: true };
+        } catch (error) {
+          console.error('转发选择结果失败:', error);
+          return { success: false };
+        }
+      }
+
       switch (message) {
         case 'csdn':
           content = await browser.scripting.executeScript({
