@@ -42,10 +42,14 @@ pnpm postinstall
 
 ### 入口点结构 (entrypoints/)
 
-- **background.ts**: 后台脚本，处理消息传递和content script注入
+- **background.ts**: 后台脚本，处理消息传递和content script注入，支持侧边栏自动打开
 - **popup/**: 扩展弹窗界面
   - `App.vue`: 主界面组件，包含网站检测逻辑和下载功能
   - `main.ts`: Vue应用入口点
+- **sidepanel/**: 侧边栏界面（与弹窗内容相同）
+  - `App.vue`: 侧边栏组件，与popup功能完全一致
+  - `main.ts`: Vue应用入口点
+  - `index.html`: 侧边栏HTML模板
 - **Content Scripts**: 针对不同网站的内容解析脚本
   - `csdn.content.ts`: CSDN博客文章解析
   - `zhihu_article.content.ts`: 知乎专栏解析  
@@ -73,16 +77,37 @@ pnpm postinstall
 
 ### 转换库配置
 
-所有content script使用Turndown库进行HTML到Markdown转换:
-- 基础转换: `new TurndownService()`
-- GitHub Flavored Markdown支持: `turndownService.use(gfm)`
+所有content script使用增强的Turndown库进行HTML到Markdown转换:
+- 基础转换: `createEnhancedTurndownService()`
+- GitHub Flavored Markdown支持: `createEnhancedTurndownService(true)` (用于CSDN等需要表格支持的网站)
+- **视频增强处理**: 自动识别和处理视频元素，包括：
+  - **`<video>` 标签**: 完整保留HTML标签结构，确保视频不丢失
+  - **视频容器** (如`.player`类): 从容器中提取并仅保留`<video>`元素，过滤掉播放按钮、控件等其他元素
+  - **iframe视频** (YouTube、Bilibili、Vimeo等): 转换为平台标识链接
+  - **播放按钮图片**: 转换为播放控制标记
+  - **`<audio>` 标签**: 完整保留HTML标签结构
 - 特定网站需针对DOM结构进行选择器优化
+
+### 工具函数
+
+- `utils/turndown-enhanced.ts`: 提供增强的Turndown服务
+  - **保留策略**: `<video>`和`<audio>`标签直接保留为HTML，不进行转换
+  - **智能过滤**: 包含视频的容器仅提取核心`<video>`元素，过滤掉无关的UI控件
+  - 可选的GFM (GitHub Flavored Markdown) 支持
+  - 统一的图片和链接处理逻辑
 
 ### 扩展权限配置
 
 在`wxt.config.ts`中配置:
-- `permissions: ["tabs", "scripting"]`: API权限
-- `host_permissions: ["*://*/*"]`: 访问所有网站权限
+- `permissions: ["tabs", "scripting", "sidePanel"]`: API权限
+- `host_permissions: ["*://*/*"]`: 访问所有网站权限  
+- `action: {}`: 支持弹窗和侧边栏的action对象
+
+### 用户界面
+
+扩展提供两种访问方式：
+1. **弹窗模式**: 点击扩展图标弹出小窗口
+2. **侧边栏模式**: 扩展会自动设置点击图标打开侧边栏，提供更宽敞的操作界面
 
 ## 调试和测试
 

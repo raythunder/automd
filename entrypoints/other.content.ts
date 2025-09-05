@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
   matches: ["*://*/*"],
@@ -49,8 +49,11 @@ export default defineContentScript({
     bodyElements.querySelectorAll('style').forEach(el => el.parentNode?.removeChild(el));
 
     const content = bodyElements.outerHTML;
-    var turndownService = new TurndownService()
-    var markdown = turndownService.turndown(`${title}\n${content}`);
+    
+    // 使用增强的Turndown服务，包含视频和多媒体处理功能
+    const turndownService = createEnhancedTurndownService();
+    const markdown = turndownService.turndown(`${title}\n${content}`);
+    
     return { 'title': titleText, 'content': markdown };
   },
 });

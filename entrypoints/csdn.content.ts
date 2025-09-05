@@ -1,5 +1,4 @@
-import TurndownService from "turndown";
-import {gfm} from "turndown-plugin-gfm";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
   matches: ["https://*.csdn.net/*"],
@@ -43,9 +42,10 @@ export default defineContentScript({
     let titleText = document.getElementById("articleContentId")?.innerText;
     let content=document.getElementById("article_content")?.outerHTML;
 
-    let turndownService = new TurndownService()
-    turndownService.use(gfm)
-    let markdown = turndownService.turndown(`${title}\n${content}`)
+    // 使用增强的Turndown服务，包含GFM支持和视频处理
+    const turndownService = createEnhancedTurndownService(true);
+    const markdown = turndownService.turndown(`${title}\n${content}`)
+    
     return { 'title': titleText, 'content': markdown };
   },
 });

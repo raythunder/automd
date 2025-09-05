@@ -1,4 +1,13 @@
 export default defineBackground(() => {
+  // 设置侧边栏行为 - 点击扩展图标时打开侧边栏
+  browser.runtime.onInstalled.addListener(() => {
+    // @ts-ignore - sidePanel API may not be available in all browsers
+    if (browser.sidePanel) {
+      // @ts-ignore
+      browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+    }
+  });
+
   // background.js
   browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     let content;

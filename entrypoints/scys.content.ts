@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
   matches: ["https://scys.com/course/*"],
@@ -41,8 +41,10 @@ export default defineContentScript({
     let titleText = document.title;
     let content = document.querySelector(".vc-course-content")?.outerHTML;
 
-    var turndownService = new TurndownService();
-    var markdown = turndownService.turndown(`${content}`);
+    // 使用增强的Turndown服务，包含视频处理功能
+    const turndownService = createEnhancedTurndownService();
+    const markdown = turndownService.turndown(`${content}`);
+
     return { title: titleText, content: markdown };
   },
 });
