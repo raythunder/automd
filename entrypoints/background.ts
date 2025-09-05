@@ -42,6 +42,12 @@ export default defineBackground(() => {
             files: ['content-scripts/wechat_article.js']
           });
           break;
+        case 'scys':
+          content = await browser.scripting.executeScript({
+            target: {tabId},
+            files: ['content-scripts/scys.js']
+          });
+          break;
         case 'other':
         default:
           content = await browser.scripting.executeScript({

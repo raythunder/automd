@@ -24,6 +24,7 @@ onMounted(async () => {
   isChatGPT.value = currentUrl.includes("https://chatgpt.com") ||
       currentUrl.includes("https://chat.openai.com");
   isWeChat.value = currentUrl.includes("https://mp.weixin.qq.com/s");
+  isScys.value = currentUrl.includes("https://scys.com/course/");
 })
 
 // 发消息
@@ -44,6 +45,7 @@ const isZhihuAnswer = ref(false);
 const isCnBlogs = ref(false);
 const isChatGPT = ref(false);
 const isWeChat = ref(false);
+const isScys = ref(false);
 
 // 下载
 const isLoading = ref(false);
@@ -103,6 +105,11 @@ const download = (title: string, content: string) => {
 
     <div class="target" v-show="isWeChat">
       <button @click="sendMessageAndDownload('wechat')" :disabled="isLoading">下载微信公众号文章Markdown</button>
+      <div class="or">or</div>
+    </div>
+
+    <div class="target" v-show="isScys">
+      <button @click="sendMessageAndDownload('scys')" :disabled="isLoading">下载SCYS课程Markdown</button>
       <div class="or">or</div>
     </div>
 
