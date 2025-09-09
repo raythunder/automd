@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import TurndownService, { Node, Options } from "turndown";
 import { gfm } from "turndown-plugin-gfm";
 
 /**
@@ -22,22 +22,24 @@ export function createEnhancedTurndownService(useGfm: boolean = false): Turndown
   turndownService.addRule('preserveVideo', {
     filter: 'video',
     replacement: function (content, node, options) {
-      return '\n\n' + node.outerHTML + '\n\n';
+      return '\n\n' + (node as HTMLElement).outerHTML + '\n\n';
     }
   });
 
   // 添加视频容器的自定义规则 (适用于SCYS等网站的player容器)
   turndownService.addRule('videoContainer', {
-    filter: function (node, options) {
-      return node.nodeName === 'DIV' && 
-             (node.classList.contains('player') ||
-              node.classList.contains('video-player') ||
-              node.classList.contains('video-container')) &&
-             node.querySelector('video');
+    filter: function (node: Node, options: Options): boolean {
+      const element = node as HTMLElement;
+      return element.nodeName === 'DIV' && 
+             (element.classList.contains('player') ||
+              element.classList.contains('video-player') ||
+              element.classList.contains('video-container')) &&
+             element.querySelector('video') !== null;
     },
     replacement: function (content, node, options) {
       // 只保留视频元素，过滤掉容器内的其他元素
-      const video = node.querySelector('video');
+      const element = node as HTMLElement;
+      const video = element.querySelector('video');
       if (video) {
         return '\n\n' + video.outerHTML + '\n\n';
       }
@@ -49,8 +51,9 @@ export function createEnhancedTurndownService(useGfm: boolean = false): Turndown
   turndownService.addRule('iframe', {
     filter: 'iframe',
     replacement: function (content, node, options) {
-      const src = node.getAttribute('src');
-      const title = node.getAttribute('title') || '';
+      const element = node as HTMLElement;
+      const src = element.getAttribute('src');
+      const title = element.getAttribute('title') || '';
       
       if (!src) return '';
       
@@ -73,16 +76,17 @@ export function createEnhancedTurndownService(useGfm: boolean = false): Turndown
   turndownService.addRule('enhancedImage', {
     filter: 'img',
     replacement: function (content, node, options) {
-      const src = node.getAttribute('src');
-      const alt = node.getAttribute('alt') || '';
-      const title = node.getAttribute('title');
+      const element = node as HTMLElement;
+      const src = element.getAttribute('src');
+      const alt = element.getAttribute('alt') || '';
+      const title = element.getAttribute('title');
       
       if (!src) return '';
       
       // 特殊处理播放按钮图片
       if ((src.startsWith('data:image') || src.includes('play')) && 
-          (node.classList.contains('btn') || 
-           node.classList.contains('play-btn') ||
+          (element.classList.contains('btn') || 
+           element.classList.contains('play-btn') ||
            alt.includes('播放') ||
            alt.includes('play'))) {
         return '\n[▶️ 播放按钮]\n';
@@ -103,7 +107,7 @@ export function createEnhancedTurndownService(useGfm: boolean = false): Turndown
   turndownService.addRule('preserveAudio', {
     filter: 'audio',
     replacement: function (content, node, options) {
-      return '\n\n' + node.outerHTML + '\n\n';
+      return '\n\n' + (node as HTMLElement).outerHTML + '\n\n';
     }
   });
 

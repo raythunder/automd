@@ -25,9 +25,21 @@ export default defineBackground(() => {
           // 发送消息启动选择
           const response = await browser.tabs.sendMessage(tabId, { action: "start_selecting" });
           return response;
-        } catch (error) {
+        } catch (error: any) {
           console.error('启动选择功能失败:', error);
           return { success: false, error: error.message };
+        }
+      }
+
+      // 处理取消选择消息
+      if (message.action === "cancel_selecting") {
+        try {
+          // 可以发送消息给content script取消选择
+          const response = await browser.tabs.sendMessage(tabId, { action: "cancel_selecting" });
+          return { success: true };
+        } catch (error: any) {
+          console.error('取消选择失败:', error);
+          return { success: false };
         }
       }
 
@@ -40,7 +52,7 @@ export default defineBackground(() => {
             content: message.content
           });
           return { success: true };
-        } catch (error) {
+        } catch (error: any) {
           console.error('转发选择结果失败:', error);
           return { success: false };
         }
@@ -102,7 +114,7 @@ export default defineBackground(() => {
       console.log(result);
       // sendResponse(result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       return false;
     }

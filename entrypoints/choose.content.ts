@@ -11,18 +11,7 @@ export default defineContentScript({
         function start() {
             isSelecting = true;
 
-            // 创建遮罩层
-            overlay = document.createElement("div");
-            overlay.style.position = "fixed";
-            overlay.style.top = "0";
-            overlay.style.left = "0";
-            overlay.style.width = "100%";
-            overlay.style.height = "100%";
-            overlay.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
-            overlay.style.pointerEvents = "none"; // 允许点击穿透
-            overlay.style.zIndex = "9998";
-            document.body.appendChild(overlay);
-
+            // 不创建遮罩层，直接开始选择
             // 监听鼠标移动
             document.addEventListener("mousemove", onMouseMove);
             // 监听点击事件
@@ -41,14 +30,12 @@ export default defineContentScript({
                 // 移除之前的高亮样式
                 hoveredElement.style.background = "";
                 hoveredElement.style.zIndex = "";
-                hoveredElement.style.border = "";
-                hoveredElement.style.outline = "";
+                hoveredElement.style.boxShadow = "";
             }
 
             // 高亮当前元素
-            target.style.background = "rgba(93, 163, 255, 0.7)";
-            target.style.border = "2px solid rgb(93, 163, 255)";
-            target.style.outline = "2px solid rgba(93, 163, 255, 0.8)";
+            target.style.background = "rgba(93, 163, 255, 0.1)";
+            target.style.boxShadow = "0 0 0 2px rgb(93, 163, 255), 0 0 8px rgba(93, 163, 255, 0.4)";
             target.style.zIndex = "10000";
             hoveredElement = target;
         }
@@ -66,17 +53,11 @@ export default defineContentScript({
             isSelecting = false;
             document.removeEventListener("mousemove", onMouseMove);
             document.removeEventListener("keydown", onKeyDown);
-            
-            if (overlay) {
-                document.body.removeChild(overlay);
-                overlay = null;
-            }
 
             if (hoveredElement) {
                 hoveredElement.style.background = ""; // 移除高亮
                 hoveredElement.style.zIndex = ""; 
-                hoveredElement.style.border = "";
-                hoveredElement.style.outline = "";
+                hoveredElement.style.boxShadow = "";
                 hoveredElement = null;
             }
         }
@@ -109,12 +90,14 @@ export default defineContentScript({
         }
 
         // 监听消息
-        browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        browser.runtime.onMessage.addListener((message) => {
             if (message.action === "start_selecting") {
                 start();
-                sendResponse({ success: true });
+                return Promise.resolve({ success: true });
+            } else if (message.action === "cancel_selecting") {
+                cleanup();
+                return Promise.resolve({ success: true });
             }
-            return false;
         });
     }
 });
