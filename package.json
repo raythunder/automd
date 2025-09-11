@@ -2,7 +2,7 @@
   "name": "automd",
   "description": "A plugin for converting the current web page to markdown and downloading it.",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "wxt",
