@@ -41,7 +41,7 @@ Auto Md 是一个浏览器扩展，可以将网页内容转换为 Markdown 格�
 
 ### Chrome  / Edge
 
-1. 下载[Releases](https://github.com/stand114514/automd/releases)编译版本并解压
+1. 下载[Releases](https://github.com/raythunder/automd/releases)编译版本并解压
 2. 打开开发人员选项
 3. 加载已解压的扩展程序
 
