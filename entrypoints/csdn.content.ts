@@ -42,8 +42,8 @@ export default defineContentScript({
     let titleText = document.getElementById("articleContentId")?.innerText;
     let content=document.getElementById("article_content")?.outerHTML;
 
-    // 使用增强的Turndown服务，包含GFM支持和视频处理
-    const turndownService = createEnhancedTurndownService(true);
+    // 使用增强的Turndown服务，包含GFM支持和路径处理
+    const turndownService = createEnhancedTurndownService(true, window.location.href);
     const markdown = turndownService.turndown(`${title}\n${content}`)
     
     return { 'title': titleText, 'content': markdown };

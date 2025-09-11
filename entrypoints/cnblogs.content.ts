@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
     matches: ['https://www.cnblogs.com/*'],
@@ -41,7 +41,7 @@ export default defineContentScript({
         let titleText = document.title;
         let content = document.querySelector(".blogpost-body")?.outerHTML;
 
-        var turndownService = new TurndownService()
+        var turndownService = createEnhancedTurndownService(false, window.location.href)
         var markdown = turndownService.turndown(`${title}\n${content}`);
         return { 'title': titleText, 'content': markdown };
     }

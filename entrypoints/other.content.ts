@@ -50,8 +50,8 @@ export default defineContentScript({
 
     const content = bodyElements.outerHTML;
     
-    // 使用增强的Turndown服务，包含视频和多媒体处理功能
-    const turndownService = createEnhancedTurndownService();
+    // 使用增强的Turndown服务，包含视频和路径处理功能
+    const turndownService = createEnhancedTurndownService(false, window.location.href);
     const markdown = turndownService.turndown(`${title}\n${content}`);
     
     return { 'title': titleText, 'content': markdown };

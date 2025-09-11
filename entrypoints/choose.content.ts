@@ -76,8 +76,8 @@ export default defineContentScript({
             // 清理选择状态
             cleanup();
 
-            // 使用增强的Turndown服务转换元素
-            const turndownService = createEnhancedTurndownService();
+            // 使用增强的Turndown服务转换元素，包含路径处理
+            const turndownService = createEnhancedTurndownService(false, window.location.href);
             const markdown = turndownService.turndown(target.outerHTML);
             
             let titleText = document.title;

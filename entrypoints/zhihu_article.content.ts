@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
     matches: ['https://zhuanlan.zhihu.com/*'],
@@ -61,7 +61,7 @@ export default defineContentScript({
         let titleText = document.title;
         let content = document.querySelector(".RichText")?.innerHTML;
 
-        var turndownService = new TurndownService()
+        var turndownService = createEnhancedTurndownService(false, window.location.href)
         var markdown = turndownService.turndown(`${title}\n${content}`);
         return {'title': titleText, 'content': markdown};
     },

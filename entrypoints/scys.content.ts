@@ -41,8 +41,8 @@ export default defineContentScript({
     let titleText = document.title;
     let content = document.querySelector(".vc-course-content")?.outerHTML;
 
-    // 使用增强的Turndown服务，包含视频处理功能
-    const turndownService = createEnhancedTurndownService();
+    // 使用增强的Turndown服务，包含视频和路径处理功能
+    const turndownService = createEnhancedTurndownService(false, window.location.href);
     const markdown = turndownService.turndown(`${content}`);
 
     return { title: titleText, content: markdown };

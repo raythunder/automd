@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
     matches: ['https://chatgpt.com/*'],
@@ -39,7 +39,7 @@ export default defineContentScript({
 
         let title = "ChatGPT_" + new Date().toLocaleDateString()+"_"+new Date().toLocaleTimeString();
         let titleText = title
-        let turndownService = new TurndownService()
+        let turndownService = createEnhancedTurndownService(false, window.location.href)
         // let content = document.querySelector(".markdown")
         let markdown = "";
         const elements = document.querySelectorAll('div.w-full.text-token-text-primary');

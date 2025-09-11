@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { createEnhancedTurndownService } from "../utils/turndown-enhanced";
 
 export default defineContentScript({
     matches: ["https://mp.weixin.qq.com/s/*"],
@@ -41,7 +41,7 @@ export default defineContentScript({
         let title = document.getElementById("activity-name")?.outerHTML;
         let titleText = document.getElementById("activity-name")?.innerText;
         let content = document.getElementById("js_content")?.outerHTML;
-        let turndownService = new TurndownService()
+        let turndownService = createEnhancedTurndownService(false, window.location.href)
         let markdown = turndownService.turndown(`${title}\n${content}`)
         return {'title': titleText, 'content': markdown};
     },
